@@ -1,0 +1,24 @@
+{
+  "board": {
+    "lists": ["eeYQGBYcB"]
+  },
+  "listsById": {
+    "eeYQGBYcB": {
+      "id": "eeYQGBYcB",
+      "title": "fjgfgj",
+      "cards": ["AOFQ8BQJW", "CjvrNWBCH"]
+    }
+  },
+  "cardsById": {
+    "CjvrNWBCH": {
+      "text": "New title",
+      "id": "CjvrNWBCH",
+      "data": "2020-08-02T12:09:53.000Z"
+    },
+    "AOFQ8BQJW": {
+      "text": "fjfgj",
+      "id": "AOFQ8BQJW",
+      "data": "2020-08-09T12:09:53.000Z"
+    }
+  }
+}
