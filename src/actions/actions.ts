@@ -18,6 +18,7 @@ import boards from "../api/boards";
 import { State, MoveCard, MoveList } from "../types";
 
 // response специально не передается в dispatch
+// обработок ошибок сети нет в данном случае в них нет смысла 
 
 export const getFetchBoard = () => async (dispatch: Dispatch) => {
   const response1 = await boards.get("/board.json");
