@@ -13,9 +13,11 @@ import styled from "styled-components";
 type IProps = {
   listId: string;
   index: number;
+  boardId: string;
+  boardTitle: string;
 };
 
-const List = ({ listId, index }: IProps) => {
+const List = ({ listId, index, boardId, boardTitle }: IProps) => {
   const list: any = useSelector((state: RootState) => state.listsById[listId]);
   const [editingTitle, setEditingTitle] = useState(false);
   const [addingCard, setAddingCard] = useState(false);
@@ -47,7 +49,7 @@ const List = ({ listId, index }: IProps) => {
 
   const deleteList = () => {
     const cards = list.cards;
-    dispatch(delList(listId, cards));
+    dispatch(delList(listId, cards, boardId, boardTitle));
   };
 
   if (list === 0) {
@@ -61,6 +63,7 @@ const List = ({ listId, index }: IProps) => {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          isDragging={snapshot.isDragging}
         >
           {editingTitle ? (
             <ListEditor
@@ -75,8 +78,12 @@ const List = ({ listId, index }: IProps) => {
           )}
 
           <Droppable droppableId={list.id}>
-            {(provided, _snapshot) => (
-              <div ref={provided.innerRef}>
+            {(provided, snapshot) => (
+              <CardContainer
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                isDraggingOver={snapshot.isDraggingOver}
+              >
                 {list.cards &&
                   list.cards.map((cardId: string, index: number) => (
                     <Card
@@ -88,18 +95,17 @@ const List = ({ listId, index }: IProps) => {
                   ))}
 
                 {provided.placeholder}
-              </div>
+                {addingCard ? (
+                  <CardEditor onSave={addCard} onCancel={toggleAddingCard} />
+                ) : (
+                  <ToggleAddCard onClick={toggleAddingCard}>
+                    <i className='fa fa-plus' aria-hidden='true' />
+                    &nbsp; Add a card
+                  </ToggleAddCard>
+                )}
+              </CardContainer>
             )}
           </Droppable>
-
-          {addingCard ? (
-            <CardEditor onSave={addCard} onCancel={toggleAddingCard} />
-          ) : (
-            <ToggleAddCard onClick={toggleAddingCard}>
-              <i className='fa fa-plus' aria-hidden='true' />
-              &nbsp; Add a card
-            </ToggleAddCard>
-          )}
         </ListContainer>
       )}
     </Draggable>
@@ -108,30 +114,46 @@ const List = ({ listId, index }: IProps) => {
 
 export default List;
 
-const ListContainer = styled.div`
-  background: #dfe3e6;
-  flex-shrink: 0;
-  width: 272px;
-  height: fit-content;
-  margin: 10px;
-  margin-right: 0;
-  border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-`;
+type Draggin = {
+  isDragging?: boolean;
+  isDraggingOver?: boolean;
+};
 
 const ListTitle = styled.div`
   cursor: pointer;
   padding: 10px;
   overflow-wrap: break-word;
+  font-weight: bold;
+`;
+
+const ListContainer = styled.div<Draggin>`
+  transition: background 0.5s ease;
+  background: ${(props) => (props.isDragging ? "#00CC66" : "#eee")};
+  ${ListTitle} {
+    color: ${(props) => (props.isDragging ? "#fff" : "#333")};
+  }
+  flex-shrink: 0;
+  width: 272px;
+  height: fit-content;
+  margin: 10px;
+  margin-right: 0;
+
+  border: 1px solid rgba(0, 0, 0, 0.12);
+`;
+
+const CardContainer = styled.div<Draggin>`
+  padding: 5px 0;
+  transition: background 0.5s ease;
+  background: ${(props) => (props.isDraggingOver ? "#999" : "#fff")};
 `;
 
 const ToggleAddCard = styled.div`
   cursor: pointer;
   padding: 10px;
   color: #6b808c;
-  border-radius: 0 0 10px 10px;
   display: flex;
   align-items: center;
+  background-color: #fff;
   &:hover {
     background-color: rgba(9, 45, 66, 0.13);
     color: #17394d;

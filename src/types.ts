@@ -11,6 +11,25 @@ export type Board = {
   board: Lists;
 };
 
+type BItems = {
+  id: string;
+  title: string;
+  lists: string[];
+};
+
+export type BOARD = {
+  [elemName: string]: BItems;
+};
+
+export type BoardsOrder = {
+  order: string[];
+};
+
+export type NewBoards = {
+  newOrder: BoardsOrder;
+  newBoard: BOARD;
+};
+
 export type ListId = {
   id: string;
   title: string;
@@ -20,7 +39,7 @@ export type ListId = {
 export type DelList = {
   listId: string;
   cards: string[];
-  newLists: string[];
+  newLists: BOARD;
   restOfLists: ListsById;
 };
 
@@ -49,14 +68,16 @@ export type Del = {
 };
 
 export type State = {
-  board: Lists;
+  board: BOARD;
   listsById: ListsById;
   cardsById: CardsById;
+  boardOrder: BoardsOrder;
 };
 
 export type MoveList = {
   oldCardIndex: number;
   newCardIndex: number;
+  boardId?: string;
 };
 
 export type MoveCard = {

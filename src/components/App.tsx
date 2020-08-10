@@ -1,15 +1,22 @@
 import React from "react";
 import Board from "./Board";
-import { HashRouter as Router, Route } from "react-router-dom";
+import { Home } from "./Home";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import styled from "styled-components";
+import Navs from "./Navs";
 
 const App = () => {
   return (
     <Container>
-      <Header>Board</Header>
       <Router>
-        <Route path='/' exact component={Board} />
-        <Route path='/:boardID' component={Board} />
+        <Header>
+          <Logo to='/'>Board</Logo>
+        </Header>
+        <Navs />
+        <Switch>
+          <Route path='/' exact component={Home} />
+          <Route path='/:boardId' component={Board} />
+        </Switch>
       </Router>
     </Container>
   );
@@ -21,7 +28,11 @@ const Container = styled.div`
   background: #50c9c3;
   background: -webkit-linear-gradient(to right, #96deda, #50c9c3);
   background: linear-gradient(to right, #96deda, #50c9c3);
-  height: 100vh;
+`;
+
+const Logo = styled(Link)`
+  text-decoration: none;
+  color: #fff;
 `;
 
 const Header = styled.div`
@@ -36,4 +47,5 @@ const Header = styled.div`
   font-weight: 200;
   text-align: left;
   font-family: sans-serif;
+  text-decoration: none;
 `;

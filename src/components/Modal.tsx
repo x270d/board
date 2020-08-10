@@ -22,6 +22,7 @@ const Modal = ({ id, listId, title, desc, activator }: IProps) => {
   const [headTitle, setHeadTitle] = useState(title);
   const [description, setDescription] = useState(desc);
   const dispatch = useDispatch();
+
   const handleModal = () => {
     setShow(false);
   };

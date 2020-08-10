@@ -1,6 +1,12 @@
-//Board
-
-import { ListsById, CardsById, DelList, Add, Del } from "../types";
+import {
+  ListsById,
+  CardsById,
+  DelList,
+  Add,
+  Del,
+  NewBoards,
+  BOARD,
+} from "../types";
 
 export const FETCH_BOARD_DATA = "FETCH_BOARD_DATA";
 type FetchBoardData = {
@@ -8,10 +14,22 @@ type FetchBoardData = {
   payload: any;
 };
 
+export const ADD_NEW_BOARD = "ADD_NEW_BOARD";
+type AddNewBoard = {
+  type: typeof ADD_NEW_BOARD;
+  payload: NewBoards;
+};
+
+export const DEL_NAV = "DEL_NAV";
+type delNav = {
+  type: typeof DEL_NAV;
+  payload: any;
+};
+
 export const MOVE_LIST = "MOVE_LIST";
 type MovedList = {
   type: typeof MOVE_LIST;
-  payload: string[];
+  payload: BOARD;
 };
 
 export const MOVE_CARD = "MOVE_CARD";
@@ -57,7 +75,9 @@ type ChangeCardText = {
 };
 
 export type Board =
+  | AddNewBoard
   | FetchBoardData
+  | delNav
   | MovedList
   | AddList
   | AddCard

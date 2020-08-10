@@ -6,7 +6,7 @@ type IProps = {
   onClickOutside: () => void;
   title: string;
   handleChangeTitle: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  deleteList?: any;
+  deleteList?: () => void;
   saveList: () => void;
 };
 
@@ -48,14 +48,13 @@ const ListEditor = ({
         onKeyDown={onEnter}
         style={{ width: deleteList ? 220 : 245 }}
       />
-      {deleteList && (
-        <i
-          className='fa fa-trash'
-          style={{ marginLeft: "10px", padding: "4px" }}
-          onClick={deleteList}
-          aria-hidden='true'
-        />
-      )}
+
+      <i
+        className='fa fa-trash'
+        style={{ marginLeft: "10px", padding: "4px" }}
+        onClick={deleteList}
+        aria-hidden='true'
+      />
     </Container>
   );
 };

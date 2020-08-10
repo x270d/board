@@ -8,22 +8,25 @@ import {
   DELETE_LIST,
   CHANGE_LIST_TITLE,
   DELETE_CARD,
+  ADD_NEW_BOARD,
+  DEL_NAV,
   Board,
 } from "./types";
 import { Dispatch } from "redux";
 import shortid from "shortid";
-
 import boards from "../api/boards";
-
 import { State, MoveCard, MoveList } from "../types";
+
+// response специально не передается в dispatch
 
 export const getFetchBoard = () => async (dispatch: Dispatch) => {
   const response1 = await boards.get("/board.json");
   const response2 = await boards.get("/listsById.json");
   const response3 = await boards.get("/cardsById.json");
-  Promise.all([response1, response2, response3]).then(
-    ([response1, response2, response3]) => {
-      dispatch(fetchData([response1, response2, response3]));
+  const response4 = await boards.get("/boardsOrder.json");
+  Promise.all([response1, response2, response3, response4]).then(
+    ([response1, response2, response3, response4]) => {
+      dispatch(fetchData([response1, response2, response3, response4]));
     }
   );
 };
@@ -35,17 +38,83 @@ export const fetchData = (data: any) => {
   };
 };
 
-export const moveList = (oldListIndex: number, newListIndex: number) => async (
+export const addNewBoard = (title: string) => async (
   dispatch: Dispatch<Board>,
   getState: () => State
 ) => {
+  const orderBoard = getState().boardOrder;
   const state = getState().board;
-  const newLists = Array.from(state.lists);
+  const id = shortid.generate();
+
+  const newBoard = {
+    ...state,
+    [id]: {
+      id: id,
+      title: title,
+      lists: [],
+    },
+  };
+
+  const newOrder = {
+    order: [...orderBoard.order, id],
+  };
+
+  dispatch({
+    type: ADD_NEW_BOARD,
+    payload: { newOrder, newBoard },
+  });
+
+  await boards.put("/board.json", newBoard);
+  await boards.put("/boardsOrder.json", newOrder);
+};
+
+export const delNav = (id: string, history: any) => async (
+  dispatch: Dispatch<Board>,
+  getState: () => State
+) => {
+  const orderBoard = getState().boardOrder;
+  const state = getState().board;
+
+  const arrOrder = orderBoard.order;
+  const newOrder = arrOrder.filter((idx: string) => idx !== id);
+  const newOrderBoard = {
+    order: newOrder || [],
+  };
+  const { [id]: deletedList, ...restOfLists } = state;
+
+  dispatch({
+    type: DEL_NAV,
+    payload: { restOfLists, newOrderBoard },
+  });
+
+  await boards.put("/board.json", { ...restOfLists });
+  await boards.put("/boardsOrder.json", newOrderBoard);
+  history.push(`/`);
+};
+
+export const moveList = (
+  oldListIndex: number,
+  newListIndex: number,
+  boardId: string
+) => async (dispatch: Dispatch<Board>, getState: () => State) => {
+  const state = getState().board;
+  const boardListId = state[boardId].lists;
+  const newLists = Array.from(boardListId);
   const [removedList] = newLists.splice(oldListIndex, 1);
   newLists.splice(newListIndex, 0, removedList);
+  const title = state[boardId].title;
 
-  dispatch({ type: MOVE_LIST, payload: newLists });
-  boards.put("/board.json", { lists: newLists });
+  const newBoardList = {
+    ...state,
+    [boardId]: {
+      title: title,
+      id: boardId,
+      lists: newLists,
+    },
+  };
+
+  dispatch({ type: MOVE_LIST, payload: newBoardList });
+  await boards.patch("/board.json", newBoardList);
 };
 
 export const moveCard = ({
@@ -73,9 +142,12 @@ export const moveCard = ({
     });
     await boards.patch("/listsById.json", newState);
   } else {
-    const sourceCards = Array.from(getState().listsById[sourceListId].cards);
+    const sourceCards = Array.from(state[sourceListId].cards) || [];
     const [removedCard] = sourceCards.splice(oldCardIndex, 1);
-    const destinationCards = Array.from(getState().listsById[destListId].cards);
+    // костыль lives matter
+    const destinationCards = state[destListId].cards
+      ? Array.from(state[destListId].cards)
+      : [];
     destinationCards.splice(newCardIndex, 0, removedCard);
     const newState = {
       ...state,
@@ -91,12 +163,13 @@ export const moveCard = ({
   }
 };
 
-export const addList = (title?: string, listId?: string) => async (
-  dispatch: Dispatch<Board>,
-  getState: () => State
-) => {
+export const addList = (
+  title: string,
+  boardId: string,
+  boardTitle: string
+) => async (dispatch: Dispatch<Board>, getState: () => State) => {
   const id = shortid.generate();
-  const state = getState().board.lists;
+  const state: any = getState().board;
   const lists = getState().listsById;
 
   const newLists = {
@@ -104,11 +177,22 @@ export const addList = (title?: string, listId?: string) => async (
     [id]: { id: id, title: title, cards: [] },
   };
 
+  const boardListId = state[boardId].lists;
+
+  const newBoardList = {
+    ...state,
+    [boardId]: {
+      id: boardId,
+      title: boardTitle,
+      lists: boardListId ? [...boardListId, id] : [id],
+    },
+  };
+
   dispatch({
     type: ADD_LIST,
-    payload: { listId: id, listTitle: title, newLists },
+    payload: { newLists, newBoardList },
   });
-  await boards.put("/board.json", { lists: [...state, id] });
+  await boards.put("/board.json", newBoardList);
   await boards.put("/listsById.json", newLists);
 };
 
@@ -120,11 +204,15 @@ export const addNewCard = (
 ) => async (dispatch: Dispatch<Board>, getState: () => State) => {
   const stateList: any = getState().listsById;
   const stateCards = getState().cardsById;
+  const list = stateList[listId].cards
+    ? [...stateList[listId].cards, cardId]
+    : [cardId];
+
   const newLists = {
     ...stateList,
     [listId]: {
       ...stateList[listId],
-      cards: [...stateList[listId].cards, cardId],
+      cards: list,
     },
   };
 
@@ -144,14 +232,26 @@ export const addNewCard = (
   await boards.put("/cardsById.json", newCard);
 };
 
-export const delList = (listId: string, cards: string[]) => async (
-  dispatch: Dispatch<Board>,
-  getState: () => State
-) => {
+export const delList = (
+  listId: string,
+  cards: string[],
+  boardId: string,
+  boardTitle: string
+) => async (dispatch: Dispatch<Board>, getState: () => State) => {
   const state = getState().board;
   const list = getState().listsById;
+  const boardListId = state[boardId].lists;
   const filterDeleted = (id: string) => id !== listId;
-  const newLists = state.lists.filter(filterDeleted);
+  const lists = boardListId.filter(filterDeleted);
+
+  const newLists = {
+    ...state,
+    [boardId]: {
+      id: boardId,
+      title: boardTitle,
+      lists: lists,
+    },
+  };
 
   const { [listId]: deletedList, ...restOfLists } = list;
 
@@ -159,7 +259,8 @@ export const delList = (listId: string, cards: string[]) => async (
     type: DELETE_LIST,
     payload: { listId, cards, newLists, restOfLists },
   });
-  await boards.put("/board.json", { lists: newLists });
+
+  await boards.put("/board.json", newLists);
   await boards.put("/listsById.json", { ...restOfLists });
 };
 

@@ -7,9 +7,11 @@ import styled from "styled-components";
 
 type IProps = {
   toggleAddingList: () => void;
+  boardId: string;
+  boardTitle: string;
 };
 
-const AddList = ({ toggleAddingList }: IProps) => {
+const AddList = ({ toggleAddingList, boardId, boardTitle }: IProps) => {
   const [title, setTitle] = useState("");
   const dispatch = useDispatch();
   const handleChangeTitle = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
@@ -18,7 +20,7 @@ const AddList = ({ toggleAddingList }: IProps) => {
   const createList = () => {
     toggleAddingList();
     if (title && title.trim()) {
-      dispatch(addList(title));
+      dispatch(addList(title, boardId, boardTitle));
     }
   };
 
@@ -44,6 +46,5 @@ export default AddList;
 
 const List = styled.div`
   background: #c0c0c0;
-  border-radius: 5px;
   padding: 2px 2px;
 `;

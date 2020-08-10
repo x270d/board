@@ -1,24 +1,107 @@
 {
+  "boardsOrder": {
+    "order": ["board-1", "board-2", "nd1oGfemM", "E8_2qpDfJ"]
+  },
   "board": {
-    "lists": ["eeYQGBYcB"]
+    "board-1": {
+      "id": "board-1",
+      "title": "board-1",
+      "lists": ["mrpCXeTr8", "eeYQGBYcB"]
+    },
+    "board-2": {
+      "title": "board-2",
+      "id": "board-2",
+      "lists": ["ccYQGBYcB", "RQ_39te6v"]
+    },
+    "nd1oGfemM": {
+      "id": "nd1oGfemM",
+      "title": "ророр",
+      "lists": ["Khd_hGq-q"]
+    },
+    "E8_2qpDfJ": {
+      "id": "E8_2qpDfJ",
+      "title": "hgj",
+      "lists": ["ljVnhSwsD"]
+    }
   },
   "listsById": {
     "eeYQGBYcB": {
       "id": "eeYQGBYcB",
-      "title": "fjgfgj",
-      "cards": ["AOFQ8BQJW", "CjvrNWBCH"]
+      "title": "List-1",
+      "cards": ["CjvrNWBCH", "XERwswFdg"]
+    },
+    "ccYQGBYcB": {
+      "id": "ccYQGBYcB",
+      "title": "Group",
+      "cards": ["vkf2c4sHg"]
+    },
+    "mrpCXeTr8": {
+      "id": "mrpCXeTr8",
+      "title": "List",
+      "cards": ["AOFQ8BQJW", "L24LiSzz-"]
+    },
+    "RQ_39te6v": {
+      "id": "RQ_39te6v",
+      "title": "List 0",
+      "cards": ["nzs2pD83k"]
+    },
+    "Khd_hGq-q": {
+      "id": "Khd_hGq-q",
+      "title": "nbcncbv",
+      "cards": ["0onpo-4cp"]
+    },
+    "ljVnhSwsD": {
+      "id": "ljVnhSwsD",
+      "title": "пропро",
+      "cards": ["5YV_bR3z9"]
     }
   },
   "cardsById": {
     "CjvrNWBCH": {
       "text": "New title",
       "id": "CjvrNWBCH",
-      "data": "2020-08-02T12:09:53.000Z"
+      "data": "2020-08-27T12:20:53.000Z"
     },
     "AOFQ8BQJW": {
-      "text": "fjfgj",
+      "text": "Test",
       "id": "AOFQ8BQJW",
-      "data": "2020-08-09T12:09:53.000Z"
+      "data": "2020-08-29T12:20:53.000Z"
+    },
+    "nzs2pD83k": {
+      "text": "Title",
+      "id": "nzs2pD83k",
+      "data": "2020-08-07T12:22:14.000Z",
+      "description": "description"
+    },
+    "L24LiSzz-": {
+      "text": "Test -1",
+      "id": "L24LiSzz-",
+      "data": "2020-08-27T12:20:53.000Z"
+    },
+    "vkf2c4sHg": {
+      "text": "Bla",
+      "id": "vkf2c4sHg",
+      "data": "2020-09-01T12:22:14.000Z"
+    },
+    "XERwswFdg": {
+      "text": "Bla-bla",
+      "id": "XERwswFdg",
+      "data": "2020-08-11T12:20:53.000Z"
+    },
+    "Npo4X22XH": {
+      "text": "впва",
+      "id": "Npo4X22XH",
+      "data": ""
+    },
+    "0onpo-4cp": {
+      "text": "апапр",
+      "id": "0onpo-4cp",
+      "data": ""
+    },
+    "5YV_bR3z9": {
+      "text": "пропр",
+      "id": "5YV_bR3z9",
+      "data": ""
     }
   }
 }

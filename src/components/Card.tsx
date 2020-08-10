@@ -40,11 +40,12 @@ const Card = ({ cardId, index, listId }: IProps) => {
 
   return (
     <Draggable draggableId={card.id} index={index}>
-      {(provided) => (
+      {(provided, snapshot) => (
         <Container
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          isDragging={snapshot.isDragging}
           onMouseEnter={startHover}
           onMouseLeave={endHover}
         >
@@ -82,17 +83,25 @@ const Card = ({ cardId, index, listId }: IProps) => {
 
 export default Card;
 
+type Draggin = {
+  isDragging: boolean;
+};
+
 const IconSee = styled.div`
   float: right;
 `;
 
-const Container = styled.div`
+const Container = styled.div<Draggin>`
   position: relative;
   cursor: pointer;
-  background: white;
+  background: #fff;
   margin: 5px;
-  border-radius: 5px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+
+  padding: 4px;
+  border: ${(props) =>
+    props.isDragging
+      ? "2px solid rgba(0, 0, 0, 0.8)"
+      : "1px solid rgba(0, 0, 0, 0.12)"};
   box-shadow: 0 1px 0 rgba(9, 45, 66, 0.25);
   font-size: 15px;
   overflow-wrap: break-word;

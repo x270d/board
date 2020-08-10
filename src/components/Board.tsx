@@ -2,22 +2,26 @@ import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { moveList, moveCard, getFetchBoard } from "../actions/actions";
 import { useSelector, useDispatch } from "react-redux";
-
+import { RouteComponentProps } from "react-router-dom";
 import List from "./List";
 import AddList from "./AddList";
 import { RootState } from "../reducers";
 import styled from "styled-components";
 
-const Board = (props: any) => {
-  const [addingList, setAddingListe] = useState(false);
+type PropsMatch = {
+  boardId: string;
+};
+
+const Board = ({ match }: RouteComponentProps<PropsMatch>) => {
+  const [addingList, setAddingList] = useState(false);
   const dispatch = useDispatch();
-  const board = useSelector((state: RootState) => state.board.lists);
-  console.log(props.match);
+  const boardId = match.params.boardId;
+  const board = useSelector((state: RootState) => state.board[boardId]);
   useEffect(() => {
     dispatch(getFetchBoard());
   }, [dispatch]);
 
-  const toggleAddingList = () => setAddingListe(!addingList);
+  const toggleAddingList = () => setAddingList(!addingList);
 
   const handleDragEnd = ({ source, destination, type }: DropResult) => {
     if (!destination) return;
@@ -26,7 +30,7 @@ const Board = (props: any) => {
       if (source.index !== destination.index) {
         const oldListIndex = source.index;
         const newListIndex = destination.index;
-        dispatch(moveList(oldListIndex, newListIndex));
+        dispatch(moveList(oldListIndex, newListIndex, boardId));
       }
       return;
     }
@@ -45,20 +49,38 @@ const Board = (props: any) => {
     }
   };
 
+  if (!board) {
+    return <div></div>;
+  }
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId='board' direction='horizontal' type='COLUMN'>
         {(provided, _snapshot) => (
-          <Container ref={provided.innerRef}>
-            {board.map((listId: string, index: number) => {
-              return <List listId={listId} key={listId} index={index} />;
-            })}
+          <Container ref={provided.innerRef} {...provided.droppableProps}>
+            {board.lists
+              ? board.lists.map((listId: string, index: number) => {
+                  return (
+                    <List
+                      boardId={boardId}
+                      listId={listId}
+                      key={listId}
+                      index={index}
+                      boardTitle={board.title}
+                    />
+                  );
+                })
+              : ""}
 
             {provided.placeholder}
 
             <ListAdd>
               {addingList ? (
-                <AddList toggleAddingList={toggleAddingList} />
+                <AddList
+                  boardId={boardId.toString()}
+                  boardTitle={board.title}
+                  toggleAddingList={toggleAddingList}
+                />
               ) : (
                 <AddListButton onClick={toggleAddingList}>
                   <IconAdd>
@@ -78,9 +100,9 @@ const Board = (props: any) => {
 export default Board;
 
 const Container = styled.div`
-  height: 90%;
+  height: 100vh;
   display: flex;
-  overflow-x: auto;
+  flex-wrap: wrap;
 `;
 
 const ListAdd = styled.div`
@@ -90,7 +112,6 @@ const ListAdd = styled.div`
 `;
 const AddListButton = styled.div`
   background-color: rgba(0, 0, 0, 0.12);
-  border-radius: 10px;
   cursor: pointer;
   color: #fff;
   display: flex;
